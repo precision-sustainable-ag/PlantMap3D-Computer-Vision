@@ -1,0 +1,2 @@
+optimizer params for both small and large model
+--data_type=FP16 --input_shape=[1,512,512,3]
