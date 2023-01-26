@@ -7,7 +7,7 @@ import cv2
 import pickle
 import matplotlib.pyplot as plt
 
-typemod = "small1024"
+typemod = "large1024"
 
 #This section detects the directory that encapsulates the script.
 script_path = str(pathlib.Path(__file__).parent.resolve())
@@ -38,7 +38,7 @@ def to_planar(arr: np.ndarray, shape: tuple) -> list:
 nn_shape = 1024
 
 #Blob path is manually changed to whatever model is being tested. This is arbitrary and temporary.
-nn_path = pathlib.Path(script_path + "/input/models/small1024_2021_4_8shaves_only_dt_and_is.blob")
+nn_path = pathlib.Path(script_path + "/input/models/large1024_2021_4_8shaves_only_dt_and_is.blob")
 
 pipeline = dai.Pipeline()
 
@@ -70,6 +70,8 @@ with dai.Device(pipeline) as device:
     dev_in = device.getInputQueue("input")
     dev_out = device.getOutputQueue("output",1,False)
     for photo in photos_in:
+        if not (".jpg" in photo):
+            continue
         start_time = time.time()
         path = (photo_in_dir+photo)
         data = cv2.imread(path)
@@ -122,10 +124,13 @@ def get_jaccard_score(ground_truth, predicted, num_classes=4):
     return sum(scores)/4
 
 labels = os.listdir(label_dir)
+labels = list(filter(lambda item: ".png" in item, labels))
 labels.sort()
 
 def get_ground_truth(label_dir, labels, i):
     label = cv2.imread(label_dir + labels[i])
+    if label.shape[1] != nn_shape:
+        label = cv2.resize(label,(nn_shape,nn_shape), interpolation = cv2.INTER_AREA)
 
     # the three channels
     soil = np.array([40, 86, 166])
