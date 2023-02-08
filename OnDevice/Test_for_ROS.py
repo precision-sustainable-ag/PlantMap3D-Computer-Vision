@@ -40,12 +40,12 @@ print("Creating color channel...")
 colorCam = pipeline.createColorCamera()
 colorCam.setPreviewSize(nn_shape[0], nn_shape[1])
 colorCam.setInterleaved(False)
-colorCam.setResolution(dai.ColorCameraProperties.SensorResolution.THE_720_P)
+colorCam.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
 colorCam.setBoardSocket(dai.CameraBoardSocket.RGB)
 colorCam.preview.link(node.input)
 CamOut=pipeline.create(dai.node.XLinkOut)
 CamOut.setStreamName("rgb")
-colorCam.preview.ling(CamOut.input)
+colorCam.preview.link(CamOut.input)
 print("Done")
 print("Creating depth channel...")
 monoL = pipeline.create(dai.node.MonoCamera)
@@ -60,51 +60,43 @@ monoR.setBoardSocket(dai.CameraBoardSocket.RIGHT)
 depth.setDefaultProfilePreset(dai.node.StereoDepth.PresetMode.HIGH_DENSITY)
 monoL.out.link(depth.left)
 monoR.out.link(depth.right)
-depth.disparity.link(dout.input)
+depth.depth.link(dout.input)
 print("Done")
 
 #Intentionally overwrites the stats file. Copy it if you want to save a certain run's data
-output_stats = open((photos_out_dir+"stats.csv"),"w")
 
 with dai.Device(pipeline) as device:
     depth_out = device.getOutputQueue("depth",1,False)
     nn_out = device.getOutputQueue("output",1,False)
     cam_out = device.getOutputQueue("rgb",1,False)
     while True:
-    	nn_data = dai.ImgFrame()
-    	while nn_data is None:
-    		nn_data = nn_out.get()
-    		time.sleep(0.1)
-    	
-    	nn_data = np.array(nn_data.getFirstLayerInt32()).reshape(nn_shape[0],nn_shape[1])
-    	soil = np.array([40, 86, 166])
-    	clover = np.array([28, 26, 228])
-    	broadleaf = np.array([184, 126, 155])
-    	grass = np.array([0, 127, 255])
+        nn_data = nn_out.get()
+        
+        nn_data = np.array(nn_data.getFirstLayerInt32()).reshape(nn_shape[0],nn_shape[1])
+        soil = np.array([40, 86, 166])
+        clover = np.array([28, 26, 228])
+        broadleaf = np.array([184, 126, 155])
+        grass = np.array([0, 127, 255])
     
-    	nn_img = np.zeros((nn_shape[0],nn_shape[1],3),dtype=np.int32)
-    	nn_img[nn_data==0] = soil
-    	nn_img[nn_data==1] = clover
-    	nn_img[nn_data==2] = broadleaf
-    	nn_img[nn_data==3] = grass
-    	
-    	out = np.zeros((3,nn_shape[0],nn_shape[1],3]),dtype=np.int32)
-    	cam_data = cam_out.get()
-    	cam_img = np.array(cam_data.getFirstLayerInt32()).reshape(nn_shape[0],nn_shape[1])
-    	depth_data = depth_out.get()
-    	depth_img = np.array(depth_data.getFirstLayerInt32()).reshape(nn_shape[0],nn_shape[1])
-    	#layers = data_o.getAllLayers()
-    	out[0] = cam_img
-    	out[1] = nn_img
-    	out[2] = depth_img
-    	
-    	#Output for Testing
-    	cv2.imshow("RGB",cam_img)
-    	cv2.imshow("Segmentation",nn_img)
-    	cv2.imshow("Depth",depth_img)
-    	
+        nn_img = np.zeros((nn_shape[0],nn_shape[1],3),dtype=np.int32)
+        nn_img[nn_data==0] = soil
+        nn_img[nn_data==1] = clover
+        nn_img[nn_data==2] = broadleaf
+        nn_img[nn_data==3] = grass
+        
+        out = np.zeros(([3,nn_shape[0],nn_shape[1],3]),dtype=np.int32)
+        cam_data = cam_out.get()
+        cam_img = np.array(cam_data.getFirstLayerInt32()).reshape(nn_shape[0],nn_shape[1])
+        depth_data = depth_out.get()
+        depth_img = np.array(depth_data.getFirstLayerInt32()).reshape(nn_shape[0],nn_shape[1])
+        #layers = data_o.getAllLayers()
+        out[0] = cam_img
+        out[1] = nn_img
+        out[2] = depth_img
+        
+        #Output for Testing
+        cv2.imshow("RGB",cam_img)
+        cv2.imshow("Segmentation",nn_img)
+        cv2.imshow("Depth",depth_img)
         
         
-
-
-
