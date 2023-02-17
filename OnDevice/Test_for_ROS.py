@@ -11,10 +11,6 @@ import matplotlib.pyplot as plt
 script_path = str(pathlib.Path(__file__).parent.resolve())
 #The layout of folders is assumed to be preconfigured relative to the current parent directory. 
 
-#This function came from the DepthAI experiments GitHub. 
-def to_planar(arr: np.ndarray, shape: tuple) -> list:
-    return cv2.resize(arr, shape).transpose(2, 0, 1).flatten()
-
 nn_shape = (512,512)
 
 #Blob path is manually changed to whatever model is being tested. This is arbitrary and temporary.
@@ -110,6 +106,6 @@ with dai.Device(pipeline) as device:
         cv2.imshow("RGB",cam_img)
         cv2.imshow("Segmentation",nn_img)
         cv2.imshow("Depth",depth_img)
-        time.sleep(1)
+        time.sleep(5)
         
         
