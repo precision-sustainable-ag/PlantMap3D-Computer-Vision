@@ -70,8 +70,9 @@ depth.depth.link(dout.input)
 print("Done")
 
 #Intentionally overwrites the stats file. Copy it if you want to save a certain run's data
-
-with dai.Device(pipeline) as device:
+ip = "169.254.54.205"
+cam = dai.DeviceInfo(ip)
+with dai.Device(pipeline,cam) as device:
     depth_out = device.getOutputQueue("depth",1,False)
     nn_out = device.getOutputQueue("output",1,False)
     cam_out = device.getOutputQueue("rgb",1,False)
@@ -96,16 +97,22 @@ with dai.Device(pipeline) as device:
         cam_img = np.array(cam_data.getCvFrame())
         depth_data = depth_out.get()
         depth_img = np.array(depth_data.getCvFrame())
+        depth_img = (depth_img * (255/depth.initialConfig.getMaxDisparity())).astype(np.uint8)
         #layers = data_o.getAllLayers()
         out[0] = cam_img
         out[1] = nn_img
         out[2] = depth_img
-        print(depth_img)
-        print(type(depth_img[0][0]),depth_img.shape)
+       
+        print(f"Depth image : {nn_img}")
+        print("------------")
         #Output for Testing
         cv2.imshow("RGB",cam_img)
-        cv2.imshow("Segmentation",nn_img)
-        cv2.imshow("Depth",depth_img)
-        time.sleep(5)
+
+        if cv2.waitKey(1) == ord('q'):
+            break
+	
+        # cv2.imshow("Segmentation",nn_img)
+        # cv2.imshow("Depth",depth_img)
+        # time.sleep(5)
         
         
