@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 #Added an CLI argument to allow switching between USB and POE testing
 parser = argparse.ArgumentParser(
-    prog = "Test for ROS"
+    prog = "Test for ROS",
     description= "Provides interface with camera pipeline and generates 3 numpy arrays")
 
 parser.add_argument("-u", "-usb",action="store_true")
@@ -62,10 +62,10 @@ print("Creating color channel...")
 #instream = pipeline.create(dai.node.XLinkIn)
 #instream.setStreamName("input")
 #instream.out.link(node.input)
-RGB_Node = pipeline.createcolorCamera()
+RGB_Node = pipeline.createColorCamera()
 RGB_Node.setPreviewSize(nn_shape[0], nn_shape[1])
 RGB_Node.setInterleaved(False)
-RGB_Node.setResolution(dai.RGB_NodeeraProperties.SensorResolution.THE_1080_P)
+RGB_Node.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
 RGB_Node.setBoardSocket(dai.CameraBoardSocket.RGB)
 
 RGB_Out=pipeline.create(dai.node.XLinkOut)
