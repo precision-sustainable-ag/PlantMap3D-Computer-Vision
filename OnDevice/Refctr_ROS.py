@@ -85,15 +85,15 @@ class Establish_Pipeline:
         
             segmentation_labels = np.array(segmentation_labels.getFirstLayerInt32()).reshape(self.nn_shape[0],self.nn_shape[1])
         
-            out = [None,None,None]
+            self.out = [None,None,None]
             rgb_data = rgb_queue.get()
             rgb_img = np.array(rgb_data.getCvFrame())
             depth_data = depth_out.get()
             depth_img = np.array(depth_data.getCvFrame())
             depth_img = (depth_img * (255/self.depth.initialConfig.getMaxDisparity())).astype(np.uint8)
-            out[0] = rgb_img #shape is (height, width, 3)
-            out[1] = segmentation_labels #shape is (height, width, 1)
-            out[2] = depth_img #shape is default
+            self.out[0] = rgb_img #shape is (height, width, 3)
+            self.out[1] = segmentation_labels #shape is (height, width, 1)
+            self.out[2] = depth_img #shape is default
 
             #Output for Testing
             cv2.imshow("RGB",rgb_img)
