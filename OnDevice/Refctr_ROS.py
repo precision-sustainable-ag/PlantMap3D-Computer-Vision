@@ -8,13 +8,14 @@ import cv2
 import matplotlib.pyplot as plt
 
 class Establish_Pipeline:
-    def __init__(self,usb,ip,shape,current_path):
+    def __init__(self,usb,ip,shape,current_path,model_rel_path):
         self.communication_type = usb
         self.script_path = current_path
+        self.blob_path = model_rel_path
 
         self.nn_shape = shape
 
-        self.nn_path = pathlib.Path(self.script_path + "/input/models/small2021_4_8shaves_only_dt_and_is.blob")
+        self.nn_path = pathlib.Path(self.script_path + self.blob_path)
 
         self.pipeline = dai.Pipeline()
 
@@ -105,7 +106,8 @@ if __name__ == "__main__":
     
     is_usb_cam = True
 
-    path = str(pathlib.Path(__file__).parent.resolve())
+    script_path = str(pathlib.Path(__file__).parent.resolve())
+    blob_rel_to_script = "/input/models/small2021_4_8shaves_only_dt_and_is.blob"
     neural_network_shape = (512,512)
-    seg_pipeline = Establish_Pipeline(is_usb_cam,"169.254.54.205",neural_network_shape,path)
+    seg_pipeline = Establish_Pipeline(is_usb_cam,"169.254.54.205",neural_network_shape,script_path,blob_rel_to_script)
     seg_pipeline.enable_camera()
