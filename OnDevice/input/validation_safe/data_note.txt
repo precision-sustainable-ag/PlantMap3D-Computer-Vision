@@ -1,0 +1,1 @@
+The stats.csv file is to be read as three data values: image name, processing time (in s), and Jaccard score of output.
