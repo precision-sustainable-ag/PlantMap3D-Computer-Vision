@@ -7,7 +7,6 @@ charset-normalizer==2.1.1
 contourpy==1.0.7
 cycler==0.11.0
 depthai==2.19.1.0
-depthai-gui==2.0.6
 fonttools==4.38.0
 idna==3.4
 imageio==2.26.0

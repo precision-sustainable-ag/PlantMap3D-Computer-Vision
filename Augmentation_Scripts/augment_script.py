@@ -15,6 +15,10 @@ def split(image,desired_shape):
     out[3] = image[-desired_shape[0]:,-desired_shape[1]:]
     return out
 
+def downscale(image,scale):
+    out = cv2.resize(image,(0,0),fx=scale,fy=scale)
+    return out
+
 def blur(image):
     out = [np.zeros(image.shape,dtype=np.uint8),""]
     process = A.GaussianBlur(p=1.0)
@@ -22,19 +26,50 @@ def blur(image):
     out[1]="g"
     return out
 
+def PCA(image):
+    out = [np.zeros(image.shape,dtype=np.uint8),""]
+    process = A.FancyPCA(alpha=0.1,p=1.0)
+    out[0]=process(image=image)["image"]
+    out[1]="p"
+    return out
 
-project_dir = "/Users/daniel/NCSU-Mini/PSA/CV_Photo_Augment_Proj/"
+def GaussNoise(image):
+    out = [np.zeros(image.shape,dtype=np.uint8),""]
+    process = A.GaussNoise(var_limit=(10.0,50.0),per_channel=True,p=1.0)
+    out[0]=process(image=image)["image"]
+    out[1]="n"
+    return out
+
+def ISONoise(image):
+    out = [np.zeros(image.shape,dtype=np.uint8),""]
+    process = A.ISONoise(color_shift=(0.01,0.1),intensity=(0.1,0.5),p=1.0)
+    out[0]=process(image=image)["image"]
+    out[1]="i"
+    return out
+
+
+
+project_dir = "../../../../PSA/CV_Photo_Augment_Proj/"
 input_dir = project_dir + "input/"
 output_dir = project_dir +"test_run/"
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)
 
-photo = cv2.imread(input_dir+"00000.jpg")
+photo = cv2.imread(input_dir+"00001.jpg")
 photo = cv2.cvtColor(photo,cv2.COLOR_BGR2RGB)
-out_imgs = split(photo,(1024,1024))
-counter = 0
-letters = ["a","b","c","d"]
-for i in out_imgs:
-    [img,code] = blur(i)
-    cv2.imwrite(output_dir+"00001"+code+letters[counter]+".jpg",cv2.cvtColor(img.astype(np.uint8),cv2.COLOR_RGB2BGR))
-    counter += 1
+
+scale = 0.7
+photo = downscale(photo,scale)
+photos = split(photo,(1024,1024))
+
+separable = [blur,PCA,GaussNoise,ISONoise]
+
+for i in photos:
+    for j in range(0,5):
+        holder = ""
+        for k in range(0,random.randint(1,5)):
+            [image,char] = separable[random.randint(0,(len(separable)-1))](i.astype(np.uint8))
+            holder = holder + char
+        cv2.imwrite(output_dir+"00000"+holder+".jpg",cv2.cvtColor(image,cv2.COLOR_RGB2BGR))
+
+
