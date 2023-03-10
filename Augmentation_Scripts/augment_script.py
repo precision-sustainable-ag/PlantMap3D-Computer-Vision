@@ -13,6 +13,12 @@ def split(image,desired_shape):
     out[1] = image[0:desired_shape[0],-desired_shape[1]:]
     out[2] = image[-desired_shape[0]:,0:desired_shape[1]]
     out[3] = image[-desired_shape[0]:,-desired_shape[1]:]
+    out = {
+        "tl":out[0],
+        "tr":out[1],
+        "bl":out[2],
+        "br":out[3]
+    }
     return out
 
 def downscale(image,scale):
@@ -55,21 +61,23 @@ output_dir = project_dir +"test_run/"
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)
 
-photo = cv2.imread(input_dir+"00001.jpg")
-photo = cv2.cvtColor(photo,cv2.COLOR_BGR2RGB)
+files = [x for x in os.listdir(input_dir).sort() if ".jpg" in x]
 
-scale = 0.7
-photo = downscale(photo,scale)
-photos = split(photo,(1024,1024))
+for photo in files:
+    photo = cv2.imread(input_dir+photo)
+    photo = cv2.cvtColor(photo,cv2.COLOR_BGR2RGB)
+    scale = 0.7
+    photo = downscale(photo,scale)
+    dictionary_holder = split(photo,(1024,1024))
 
-separable = [blur,PCA,GaussNoise,ISONoise]
+    separable = [blur,PCA,GaussNoise,ISONoise]
 
-for i in photos:
-    for j in range(0,5):
-        holder = ""
-        for k in range(0,random.randint(1,5)):
-            [image,char] = separable[random.randint(0,(len(separable)-1))](i.astype(np.uint8))
-            holder = holder + char
-        cv2.imwrite(output_dir+"00000"+holder+".jpg",cv2.cvtColor(image,cv2.COLOR_RGB2BGR))
+    for i in dictionary_holder:
+        for j in range(0,5):
+            holder = i #dictionary key is start of character code file name
+            for k in range(0,random.randint(1,5)):
+                [image,char] = separable[random.randint(0,(len(separable)-1))](dictionary_holder[i].astype(np.uint8))
+                holder = holder + char
+            cv2.imwrite(output_dir+photo+holder+".jpg",cv2.cvtColor(image,cv2.COLOR_RGB2BGR))
 
 
