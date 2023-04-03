@@ -55,16 +55,20 @@ def ISONoise(image):
 
 
 
-project_dir = "../../../../PSA/CV_Photo_Augment_Proj/"
-input_dir = project_dir + "input/"
-output_dir = project_dir +"test_run/"
-if not os.path.exists(output_dir):
-    os.mkdir(output_dir)
+project_dir = "~/NCSU/PSA/CV_Photo_Augment_Proj/"
+input_dir =  "/Users/Daniel/NCSU/PSA/CV_Photo_Augment_Proj/input/"
+output_dir =  "/Users/Daniel/NCSU/PSA/CV_Photo_Augment_Proj/dataset1/"
+#if not os.path.exists(output_dir):
+#    os.mkdir(output_dir)
 
-files = [x for x in os.listdir(input_dir).sort() if ".jpg" in x]
+input_list = os.listdir(input_dir)
+input_list.sort()
+files = [x for x in input_list if ".jpg" in x]
 
-for photo in files:
-    photo = cv2.imread(input_dir+photo)
+for photo_num in files:
+    print("Starting "+photo_num)
+    photo = cv2.imread(input_dir+photo_num)
+    photo_num = photo_num.split(".")[0]
     photo = cv2.cvtColor(photo,cv2.COLOR_BGR2RGB)
     scale = 0.7
     photo = downscale(photo,scale)
@@ -73,11 +77,12 @@ for photo in files:
     separable = [blur,PCA,GaussNoise,ISONoise]
 
     for i in dictionary_holder:
-        for j in range(0,5):
-            holder = i #dictionary key is start of character code file name
-            for k in range(0,random.randint(1,5)):
-                [image,char] = separable[random.randint(0,(len(separable)-1))](dictionary_holder[i].astype(np.uint8))
-                holder = holder + char
-            cv2.imwrite(output_dir+photo+holder+".jpg",cv2.cvtColor(image,cv2.COLOR_RGB2BGR))
+        for j in range(0,10):
+            holder = i +"_" #dictionary key is start of character code file name
+            image = dictionary_holder[i].astype(np.uint8)
+            for k in range(0,random.randint(1,7)):
+                [image,char] = separable[random.randint(0,(len(separable)-1))](image)
+                holder = holder + char   
+            cv2.imwrite((output_dir+photo_num+holder+".jpg"),cv2.cvtColor(image.astype(np.uint8),cv2.COLOR_RGB2BGR))
 
 
