@@ -6,7 +6,7 @@ import albumentations as A
 import numpy as np
 
 
-def split(image,desired_shape):
+def split(image,desired_shape,holder=0):
     #Currently assumes that image shape is larger than desired_shape
     out = np.zeros((4,desired_shape[0],desired_shape[1],3))
     out[0] = image[0:desired_shape[0],0:desired_shape[1]]
@@ -21,8 +21,8 @@ def split(image,desired_shape):
     }
     return out
 
-def downscale(image,scale):
-    out = cv2.resize(image,(0,0),fx=scale,fy=scale)
+def downscale(image,scale,interpol=cv2.INTER_AREA):
+    out = cv2.resize(image,(0,0),fx=scale,fy=scale,interpolation=interpol)
     return out
 
 def blur(image):
@@ -81,7 +81,7 @@ for photo_num in files:
     non_separable = [downscale,split]
     for i in non_separable:
         photo = i(photo,scale)
-        label = i(label,scale)
+        label = i(label,scale,cv2.INTER_NEAREST)
         scale = (1024,1024) 
         #Reusing this scale variable for image shape allows the loop to work.
         #It is just changing to specify the output image shape for the split
