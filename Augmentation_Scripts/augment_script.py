@@ -57,7 +57,7 @@ def ISONoise(image):
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 #project_dir = os.path.abspath("../../../psa_images/")
-input_dir =  os.path.abspath("../../../psa_images/biomass-labebed-training/data/synthetic_images/Images/")
+input_dir =  os.path.abspath("../../../psa_images/biomass-labebed-training/data/synthetic_images/renamed/")
 label_dir = os.path.abspath("../../../psa_images/oak-d/oak-d-synth-augmented-training/opencv/ImageLabels/")
 run_name = "dataset1"
 output_im_dir =  os.path.abspath("../../../psa_images/oak-d/oak-d-synth-augmented-training/opencv/"+run_name+"/images/")
