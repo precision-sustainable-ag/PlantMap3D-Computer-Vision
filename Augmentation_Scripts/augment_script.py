@@ -56,12 +56,12 @@ def ISONoise(image):
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
-project_dir = os.path.abspath("../../CV_Photo_Augment_Proj/")
-input_dir =  os.path.abspath("../../CV_Photo_Augment_Proj/input/")
-label_dir = os.path.abspath("../../CV_Photo_Augment_Proj/labels/")
-run_name = "dataset2_with_labels"
-output_im_dir =  os.path.abspath("../../CV_Photo_Augment_Proj/"+run_name+"/images/")
-resized_labels = os.path.abspath("../../CV_Photo_Augment_Proj/"+run_name+"/labels/")
+#project_dir = os.path.abspath("../../../psa_images/")
+input_dir =  os.path.abspath("../../../psa_images/biomass-labebed-training/data/synthetic_images/Images/")
+label_dir = os.path.abspath("../../../psa_images/oak-d/oak-d-synth-augmented-training/opencv/ImageLabels/")
+run_name = "dataset1"
+output_im_dir =  os.path.abspath("../../../psa_images/oak-d/oak-d-synth-augmented-training/opencv/"+run_name+"/images/")
+resized_labels = os.path.abspath("../../../psa_images/oak-d/oak-d-synth-augmented-training/opencv/labels/")
 if not os.path.exists(output_im_dir):
     Path(output_im_dir).mkdir(parents=True)
 if not os.path.exists(resized_labels):
@@ -78,29 +78,21 @@ for photo_num in files:
     label = cv2.imread(label_dir)
     photo = cv2.cvtColor(photo,cv2.COLOR_BGR2RGB)
     scale = 0.7
-    non_separable = [downscale,split]
-    for i in non_separable:
-        photo = i(photo,scale)
-        label = i(label,scale,cv2.INTER_NEAREST)
-        scale = (1024,1024) 
-        #Reusing this scale variable for image shape allows the loop to work.
-        #It is just changing to specify the output image shape for the split
-        #function after the scaling. 
 
-    for i in label:
-        #i is dictionary key, which is either "tl", "tr", "bl", or "br" for matching the augmented images. 
-        image = label[i].astype(np.uint8)
-        cv2.imwrite((resized_labels+photo_num+i+".jpg"),cv2.cvtColor(image.astype(np.uint8),cv2.COLOR_RGB2BGR)) 
+    photo = downscale(photo,scale)
+    label = downscale(label,scale,cv2.INTER_NEAREST)
+    cv2.imwrite(resized_labels+photo_num+".jpg",label)
 
     separable = [blur,PCA,GaussNoise,ISONoise]
 
-    for i in photo:
-        for j in range(0,10):
-            holder = i +"_" #dictionary key is start of character code file name
-            image = photo[i].astype(np.uint8)
-            for k in range(0,random.randint(1,7)):
-                [image,char] = separable[random.randint(0,(len(separable)-1))](image)
-                holder = holder + char   
-            cv2.imwrite((output_im_dir+photo_num+holder+".jpg"),cv2.cvtColor(image.astype(np.uint8),cv2.COLOR_RGB2BGR))
+    for j in range(0,10):
+        holder = "_"
+        image = photo[i].astype(np.uint8)
+        for k in range(0,random.randint(1,7)):
+            [image,char] = separable[random.randint(0,(len(separable)-1))](image)
+            holder = holder + char
+        cv2.imwrite((output_im_dir+photo_num+holder+".jpg"),cv2.cvtColor(image.astype(np.uint8),cv2.COLOR_RGB2BGR))
+
+
 
 
