@@ -4,10 +4,10 @@ from pathlib import Path
 import os
 
 #These directories are not in the GitHub anywhere because of the quantity of data. 
-download_dir = "../../../../PSA/CV_Photo_Augment_Proj/opencv_synthetic_data/"
-photo_dir = "../../../../PSA/CV_Photo_Augment_Proj/input/"
-photos = os.listdir(download_dir)
+source_dir = "../../../psa_images/biomass-labebed-training/data/synthetic_images/Images/"
+photo_dir = "../../../psa_images/biomass-labebed-training/data/synthetic_images/renamed/"
+photos = os.listdir(source_dir)
 counter = 1
 for photo in photos:
-    os.rename(download_dir+photo,photo_dir+str(counter).zfill(5)+".jpg")
+    os.rename(source_dir+photo,photo_dir+str(counter).zfill(5)+".jpg")
     counter+=1
