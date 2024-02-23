@@ -40,7 +40,7 @@ nn_shape = 768
 
 #Blob path is manually changed to whatever model is being tested. This is arbitrary and temporary.
 #nn_path = pathlib.Path(script_path + "/input/models/large1024_2021_4_8shaves_only_dt_and_is.blob")
-nn_path = pathlib.Path(script_path + "/input/models/deeplabMTL.blob")
+nn_path = pathlib.Path(script_path + "/input/models/deeplabMTL_mobilenetv3.blob")
 
 pipeline = dai.Pipeline()
 
