@@ -20,8 +20,13 @@ if not os.path.exists(output_path):
 
 files_to_convert = os.listdir(input_path)
 for file in files_to_convert:
-    print(file)
-    image = cv2.imread(os.path.join(input_path,file))
-    image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-    cv2.imwrite(os.path.join(output_path,file),image)
+    if os.path.splitext(file)[1] in [".png",".jpeg"]:
+        image = cv2.imread(os.path.join(input_path,file))
+        if image is not None:
+            image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+            cv2.imwrite(os.path.join(output_path,file),image)
+        else:
+            print(f"{file} does not seem to be a valid image.")
+    else:
+        print(f"{file} does not seem to be a valid image.")
 
